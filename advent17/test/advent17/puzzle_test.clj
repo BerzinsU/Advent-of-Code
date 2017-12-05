@@ -30,6 +30,21 @@
 ;                                              [3 8 6 5]])
 ;           9))))
 
+(deftest validate-passphrase-list-tests
+  (testing "High-Entropy Passphrases - test if words are unique"
+    (is (= (validate-passphrase-list ["aa bb cc dd ee"
+                                      "aa bb cc dd aa"
+                                      "aa bb cc dd aaa"])
+           2))))
+
+(deftest validate-passphrase-list-on-anagrams-tests
+  (testing "High-Entropy Passphrases - test if words are unique"
+    (is (= (validate-passphrase-list-on-anagrams ["abcde fghij"
+                                                  "abcde xyz ecdab"
+                                                  "a ab abc abd abf abj"
+                                                  "iiii oiii ooii oooi oooo"
+                                                  "oiii ioii iioi iiio"])
+           3))))
 
 (deftest jump-out-of-list-test
   (testing "A Maze of Twisty Trampolines - test step counter"

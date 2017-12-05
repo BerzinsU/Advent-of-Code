@@ -28,3 +28,25 @@
 ;            [19 6 1 2 11]
 ;            [20 7 8 9 10]
 ;            [21 22 23]]))))
+
+(deftest validate-passphrase-tests
+  (testing "High-Entropy Passphrases - test if words are unique"
+    (is (= (validate-passphrase "aa bb cc dd ee")
+           true))
+    (is (= (validate-passphrase "aa bb cc dd aa")
+           false))
+    (is (= (validate-passphrase "aa bb cc dd aaa")
+           true))))
+
+(deftest validate-passphrase-anagram-tests
+  (testing "High-Entropy Passphrases - test if words are unique"
+    (is (= (validate-passphrase-anagram "abcde fghij")
+           true))
+    (is (= (validate-passphrase-anagram "abcde xyz ecdab")
+           false))
+    (is (= (validate-passphrase-anagram "a ab abc abd abf abj")
+           true))
+    (is (= (validate-passphrase-anagram "iiii oiii ooii oooi oooo")
+           true))
+    (is (= (validate-passphrase-anagram "oiii ioii iioi iiio")
+           false))))

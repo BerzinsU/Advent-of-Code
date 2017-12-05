@@ -1,5 +1,6 @@
 (ns advent17.puzzles
-  (:require [advent17.helpers :as h]))
+  (:require [advent17.helpers :as h]
+            [clojure.string :as str]))
 
 (defn inverse-captcha
   "http://adventofcode.com/2017/day/1"
@@ -45,6 +46,16 @@
   (->> spreadsheet
        (map h/calculate-row-division-checksum)
        (reduce +)))
+
+(defn validate-passphrase-list
+  "https://adventofcode.com/2017/day/4"
+  [passphrases]
+  (count (filter #(h/validate-passphrase %) passphrases)))
+
+(defn validate-passphrase-list-on-anagrams
+  "https://adventofcode.com/2017/day/4"
+  [passphrases]
+  (count (filter #(h/validate-passphrase-anagram %) passphrases)))
 
 (defn jump-out-of-list
   "https://adventofcode.com/2017/day/5"

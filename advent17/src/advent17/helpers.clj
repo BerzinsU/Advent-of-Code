@@ -1,4 +1,5 @@
-(ns advent17.helpers)
+(ns advent17.helpers
+  (:require [clojure.string :as str]))
 
 (defn int->digits [int]
   (->> int
@@ -36,3 +37,23 @@
   (let [x 0
         y 0]
     ))
+
+(defn validate-passphrase
+  [passphrase]
+  (let [split-passphrase (str/split passphrase #" ")]
+    (= (count split-passphrase)
+       (count (distinct split-passphrase)))))
+
+(defn sort-words-by-chars [words]
+  (mapv (fn [word]
+          (-> word
+              (str/split #"")
+              sort
+              str))
+        words))
+
+(defn validate-passphrase-anagram
+  [passphrase]
+  (let [split-passphrase (str/split passphrase #" ")]
+    (= (count split-passphrase)
+       (count (distinct (sort-words-by-chars split-passphrase))))))
