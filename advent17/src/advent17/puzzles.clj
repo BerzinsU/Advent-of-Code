@@ -31,3 +31,41 @@
                  :idx 0}
                 digits)
         :sum)))
+
+(defn corruption-checksum
+  "https://adventofcode.com/2017/day/2"
+  [spreadsheet]
+  (->> spreadsheet
+       (map h/calculate-row-checksum)
+       (reduce +)))
+
+(defn corruption-checksum-for-dividers
+  "https://adventofcode.com/2017/day/2"
+  [spreadsheet]
+  (->> spreadsheet
+       (map h/calculate-row-division-checksum)
+       (reduce +)))
+
+(defn jump-out-of-list
+  "https://adventofcode.com/2017/day/5"
+  [list]
+  (loop [steps 0
+         idx 0
+         list list]
+    (if-let [step-value (get list idx)]
+      (recur (inc steps)
+             (+ idx step-value)
+             (update list idx inc))
+      steps)))
+
+(defn jump-out-of-list-with-decrease
+  "https://adventofcode.com/2017/day/5"
+  [list]
+  (loop [steps 0
+         idx 0
+         list list]
+    (if-let [step-value (get list idx)]
+      (recur (inc steps)
+             (+ idx step-value)
+             (update list idx (if (> step-value 2) dec inc)))
+      steps)))
