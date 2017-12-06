@@ -50,3 +50,23 @@
            true))
     (is (= (validate-passphrase-anagram "oiii ioii iioi iiio")
            false))))
+
+(deftest check-history-tests
+  (testing "test if memory is reallocated correctly"
+    (is (= (already-in-history? [[0 1] [1 1]] [0 1])
+           true))
+    (is (= (already-in-history? [[0 1] [1 1]] [2 2])
+           false))))
+
+(deftest reallocate-memory-tests
+  (testing "test if memory is reallocated correctly"
+    (is (= (reallocate-memory [0 2 7 0])
+           [2 4 1 2]))
+    (is (= (reallocate-memory [2 4 1 2])
+           [3 1 2 3]))
+    (is (= (reallocate-memory [3 1 2 3])
+           [0 2 3 4]))
+    (is (= (reallocate-memory [0 2 3 4])
+           [1 3 4 1]))
+    (is (= (reallocate-memory [1 3 4 1])
+           [2 4 1 2]))))

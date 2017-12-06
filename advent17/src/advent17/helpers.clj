@@ -57,3 +57,21 @@
   (let [split-passphrase (str/split passphrase #" ")]
     (= (count split-passphrase)
        (count (distinct (sort-words-by-chars split-passphrase))))))
+
+(defn already-in-history? [history item]
+  (not (empty? (filter #(= % item) history))))
+
+(defn next-step-in-memory [memory current-idx]
+  (mod (inc current-idx) (count memory)))
+
+(defn reallocate-memory [memory-blocks]
+  (let [max (apply max memory-blocks)
+        index-of-max (first (keep-indexed #(when (= max %2) %1) memory-blocks))]
+    (loop [blocks-to-reallocate max
+           idx (next-step-in-memory memory-blocks index-of-max)
+           memory (assoc memory-blocks index-of-max 0)]
+      (if (= 0 blocks-to-reallocate)
+        memory
+        (recur (dec blocks-to-reallocate)
+               (next-step-in-memory memory-blocks idx)
+               (update memory idx inc))))))

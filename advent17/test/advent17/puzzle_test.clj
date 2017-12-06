@@ -55,3 +55,13 @@
   (testing "A Maze of Twisty Trampolines - test step counter"
     (is (= (jump-out-of-list-with-decrease [0 3 0 1 -3])
            10))))
+
+(deftest count-reallocate-memory-steps-tests
+  (testing "Memory Reallocation - count rellocaton steps necessary "
+    (is (= (count-reallocate-memory-steps [0 2 7 0])
+           5))))
+
+(deftest count-reallocate-memory-loop-tests
+  (testing "Memory Reallocation - count rellocaton steps necessary "
+    (is (= (count-reallocate-memory-loop [0 2 7 0])
+           4))))

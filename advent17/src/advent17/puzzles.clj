@@ -80,3 +80,27 @@
              (+ idx step-value)
              (update list idx (if (> step-value 2) dec inc)))
       steps)))
+
+(defn count-reallocate-memory-steps
+  "https://adventofcode.com/2017/day/6"
+  [memory-blocks]
+  (loop [steps 0
+         memory-blocks memory-blocks
+         history []]
+    (let [new-reallocation (h/reallocate-memory memory-blocks)]
+      (if (h/already-in-history? history new-reallocation)
+        (inc steps)
+        (recur (inc steps)
+               new-reallocation
+               (conj history new-reallocation))))))
+
+(defn count-reallocate-memory-loop
+  "https://adventofcode.com/2017/day/6"
+  [memory-blocks]
+  (loop [memory-blocks memory-blocks
+         history []]
+    (let [new-reallocation (h/reallocate-memory memory-blocks)]
+      (if (h/already-in-history? history new-reallocation)
+        (dec (count-reallocate-memory-steps new-reallocation))
+        (recur new-reallocation
+               (conj history new-reallocation))))))
