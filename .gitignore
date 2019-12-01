@@ -11,3 +11,6 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 .nrepl-port
+__pycache__/
+.pytest_cache
+*.pyc 
