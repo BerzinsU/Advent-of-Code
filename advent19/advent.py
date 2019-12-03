@@ -32,6 +32,7 @@ def day_1_p2():
     fuels = map(calculateFuelRecursive, weights)
     return sum(fuels)
 
+
 # -------------- DAY 2---------------------
 
 def do_op(intcode, pos):
@@ -77,4 +78,19 @@ def day_2_p2():
                     verb=y
         return 100*noun+verb
 
-print day_2_p2()
+
+# -------------- DAY 3---------------------
+
+def traceWire(wire, board):
+    return board
+
+
+def day_3():
+    with open(InputPath('inputs/input_3.txt')) as f:
+        wires = f.read().splitlines()
+        wire_1= wires[0].split(',')
+        wire_2= wires[1].split(',')
+        board = mb.zeros(shape[, dtype, order])
+        return wire_2
+
+print(day_3())

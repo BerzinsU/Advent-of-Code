@@ -28,6 +28,7 @@ def test_fuel_rec_100756():
 
 def test_day_1_p2():
     assert adv.day_1_p2() == 4896582
+    
 
 # -------------- DAY 2---------------------
 
@@ -48,3 +49,6 @@ def test_day_2():
 
 def test_day_2_p2():
     assert adv.day_2_p2() == 8976
+
+
+# -------------- DAY 3---------------------

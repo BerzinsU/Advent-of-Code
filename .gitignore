@@ -14,3 +14,5 @@ pom.xml.asc
 __pycache__/
 .pytest_cache
 *.pyc 
+env/
+.vscode/
