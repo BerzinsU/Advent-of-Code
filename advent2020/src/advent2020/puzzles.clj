@@ -28,25 +28,28 @@
                     rest)))
            smallNumbers))))
 
+(defn parse-inputs [[from to letter password]]
+  {:from        (Integer/parseInt from)
+   :to          (Integer/parseInt to)
+   :letter-char (first letter)
+   :password    password})
+
 (defn read-inputs [path]
   (-> (slurp path)
       (str/split #"\n")
       (->>
-        (map #(str/replace % #"\: | |\-" ";"))
-        (map #(str/split % #"\;")))))
+        (map #(-> (str/split % #":*\s|-") parse-inputs)))))
 
 
 (defn day_2_1 []
   (time
     (let [inputs (read-inputs "inputs/input_day_2_1.txt")]
-      (reduce (fn [counts password]
-                (let [from (Integer/parseInt (first password))
-                      to (Integer/parseInt (second password))
-                      letter-char (-> password pop last char-array first)
-                      char-counts (frequencies (last password))]
+      (reduce (fn [counts {:keys [from to letter-char password]}]
+                (let
+                  [char-counts (frequencies password)]
                   (if (and (contains? char-counts letter-char)
                            (<= from (char-counts letter-char) to))
-                    (+ counts 1)
+                    (inc counts)
                     counts)))
               0
               inputs))))
@@ -54,19 +57,16 @@
 (defn day_2_2 []
   (time
     (let [inputs (read-inputs "inputs/input_day_2_1.txt")]
-      (reduce (fn [counts password]
-                (let [index-1 (- (Integer/parseInt (first password)) 1)
-                      index-2 (- (Integer/parseInt (second password)) 1)
-                      letter-char (-> password pop last char-array first)
-                      chars (-> password last char-array vec)
-                      letter-in-first (= (chars index-1) letter-char)
-                      letter-in-second (and (< index-2 (count chars))
-                                            (= (chars index-2) letter-char))]
-                  (if (and (or letter-in-first
-                               letter-in-second)
-                           (not (and letter-in-first
-                                     letter-in-second)))
-                    (+ counts 1)
+      (reduce (fn [counts {:keys [from to letter-char password]}]
+                (let [index-1 (dec from)
+                      index-2 (dec to)
+                      chars (-> password char-array vec)
+                      letter-in-first? (= (chars index-1) letter-char)
+                      letter-in-second? (and (< index-2 (count chars))
+                                             (= (chars index-2) letter-char))]
+                  (if (not= letter-in-first?
+                            letter-in-second?)
+                    (inc counts)
                     counts)))
               0
               inputs))))
