@@ -70,3 +70,47 @@
                     counts)))
               0
               inputs))))
+
+;;Day 3
+(defn read-inputs_3 [path]
+  (-> (slurp path)
+      (str/split #"\n")))
+
+
+(defn plant-trees-to-right [forest right]
+  (let [height (count forest)]
+    (->> forest
+         (map #(apply str (repeat (* right height) %)))
+         (mapv #(str/split % #"")))))
+
+
+(defn traverse [inputs right down]
+  (reduce (fn [stepper row]
+            (if (= (row (last stepper)) "#")
+              [(inc (first stepper)) (+ (last stepper) right)]
+              [(first stepper) (+ (last stepper) right)]))
+          [0 right]
+          (subvec (vec (take-nth down inputs)) 1)))
+
+
+(defn day_3_1 []
+  (time
+    (let [right 3
+          down 1
+          forest (-> (read-inputs_3 "inputs/input_day_3_1.txt")
+                     (plant-trees-to-right right))]
+      (-> (traverse forest right down)
+          first))))
+
+
+(defn day_3_2 []
+  (time
+    (let [slopes [[1 1] [3 1] [5 1] [7 1] [1 2]]
+          forest (-> (read-inputs_3 "inputs/input_day_3_1.txt")
+                     (plant-trees-to-right 8))]
+      (->> (map
+             (fn [[right down]]
+               (traverse forest right down))
+             slopes)
+           (map first)
+           (reduce *)))))
