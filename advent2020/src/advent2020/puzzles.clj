@@ -127,6 +127,7 @@
                            (map keyword))
                       (re-seq #"(?<=:).*?(?=\s|$)" line))))))
 
+
 (defn check-passports [passports]
   (let [parsed (parse-passports passports)
         allowed-keys #{:byr :iyr :eyr :hgt :hcl :ecl :pid}]
@@ -136,6 +137,7 @@
                   (conj has-req-fields passport)
                   has-req-fields)))
             [] parsed)))
+
 
 (defn day_4_1 []
   (time
@@ -153,7 +155,7 @@
                   valid_hcl (not (nil? (re-find #"\#[a-fA-F0-9]{6}" (:hcl passport))))
                   valid_ecl (not (nil? ((keyword (:ecl passport)) #{:amb :blu :brn :gry :grn :hzl :oth})))
                   valid_pid (not (nil? (re-find #"^\d{9}$" (:pid passport))))]
-              (every? true?[valid_bth valid_iyr valid_eyr valid_hgt valid_hcl valid_ecl valid_pid])))
+              (every? true? [valid_bth valid_iyr valid_eyr valid_hgt valid_hcl valid_ecl valid_pid])))
           passports))
 
 
