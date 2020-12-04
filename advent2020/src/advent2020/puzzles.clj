@@ -1,5 +1,6 @@
 (ns advent2020.puzzles
   (:require [clojure.string :as str]
+            [clojure.set :as cs]
             [clojure.java.io :refer [resource]]
             [clojure.edn :as edn]))
 
@@ -114,3 +115,49 @@
              slopes)
            (map first)
            (reduce *)))))
+
+
+;; Day 4
+
+(defn parse-passports [raw]
+  (->> (str/split raw #"\n\n")
+       (map #(str/replace % #"\n" " "))
+       (map (fn [line]
+              (zipmap (->> (re-seq #"\w+(?=\:)" line)
+                           (map keyword))
+                      (re-seq #"(?<=:).*?(?=\s|$)" line))))))
+
+(defn check-passports [passports]
+  (let [parsed (parse-passports passports)
+        allowed-keys #{:byr :iyr :eyr :hgt :hcl :ecl :pid}]
+    (reduce (fn [has-req-fields passport]
+              (let [diff (cs/difference allowed-keys (set (keys passport)))]
+                (if (= (count diff) 0)
+                  (conj has-req-fields passport)
+                  has-req-fields)))
+            [] parsed)))
+
+(defn day_4_1 []
+  (time
+    (count (check-passports (slurp "inputs/input_day_4_1.txt")))))
+
+
+(defn validate-passports [passports]
+  (filter (fn [passport]
+            (let [valid_bth (<= 1920 (Integer/parseInt (:byr passport)) 2002)
+                  valid_iyr (<= 2010 (Integer/parseInt (:iyr passport)) 2020)
+                  valid_eyr (<= 2020 (Integer/parseInt (:eyr passport)) 2030)
+                  valid_hgt (if (= "cm" (re-find #"[a-zA-Z]+" (:hgt passport)))
+                              (<= 150 (Integer/parseInt (re-find #"\d+" (:hgt passport))) 193)
+                              (<= 59 (Integer/parseInt (re-find #"\d+" (:hgt passport))) 76))
+                  valid_hcl (not (nil? (re-find #"\#[a-fA-F0-9]{6}" (:hcl passport))))
+                  valid_ecl (not (nil? ((keyword (:ecl passport)) #{:amb :blu :brn :gry :grn :hzl :oth})))
+                  valid_pid (not (nil? (re-find #"^\d{9}$" (:pid passport))))]
+              (every? true?[valid_bth valid_iyr valid_eyr valid_hgt valid_hcl valid_ecl valid_pid])))
+          passports))
+
+
+(defn day_4_2 []
+  (time
+    (let [has-req-fields (check-passports (slurp "inputs/input_day_4_1.txt"))]
+      (count (validate-passports has-req-fields)))))
