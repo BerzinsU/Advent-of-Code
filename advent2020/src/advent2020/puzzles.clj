@@ -163,3 +163,49 @@
   (time
     (let [has-req-fields (check-passports (slurp "inputs/input_day_4_1.txt"))]
       (count (validate-passports has-req-fields)))))
+
+
+;;Day 5
+
+(defn read-input_lines [path]
+  (-> (slurp path)
+      (str/split #"\n")))
+
+
+(defn midpoint [from to]
+  (+ from (quot (- to from) 2)))
+
+
+(defn calc-id [paths]
+  (+ (* 8 (first paths))
+     (last paths)))
+
+
+(defn get_seat_id [seat-hash]
+  (-> (reduce (fn [[from to left right] letter]
+                (condp = letter
+                  \F [from (midpoint from to) left right]
+                  \B [(cond-> (midpoint from to) even? inc) to left right]
+                  \R [from to (cond-> (midpoint left right) even? inc) right]
+                  \L [from to left (midpoint left right)]))
+              [0 127 0 7]
+              seat-hash)
+      calc-id))
+
+
+(defn day_5_1 []
+  (time
+    (let [inputs (read-input_lines "inputs/input_day_5_1.txt")]
+      (apply max (map get_seat_id inputs)))))
+
+
+(defn day_5_2 []
+  (time
+    (let [inputs (read-input_lines "inputs/input_day_5_1.txt")
+          ids (sort (map get_seat_id inputs))]
+      (reduce (fn [last index]
+                (if (not= (dec index) last)
+                  (reduced (dec index))
+                  index))
+              (dec (first ids))
+              ids))))
