@@ -17,3 +17,21 @@
     (is (= 567 (get_seat_id "BFFFBBFRRR")))
     (is (= 119 (get_seat_id "FFFBBBFRRR")))
     (is (= 820 (get_seat_id "BBFFBBFRLL")))))
+
+(deftest count_yeses
+  (testing "Counting yeses"
+    (is (= 3 (count-group-yes "abc")))
+    (is (= 3 (count-group-yes "a\nb\nc")))
+    (is (= 3 (count-group-yes "ab\nac")))
+    (is (= 1 (count-group-yes "a\na\na\na")))
+    (is (= 1 (count-group-yes "b")))
+    (is (= 11 (count-all-groups "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb")))))
+
+(deftest count_unanimous_yeses
+  (testing "Counting unanimous yeses"
+    (is (= 3 (count-group-unanimous-yes "abc")))
+    (is (= 0 (count-group-unanimous-yes "a\nb\nc")))
+    (is (= 1 (count-group-unanimous-yes "ab\nac")))
+    (is (= 1 (count-group-unanimous-yes "a\na\na\na")))
+    (is (= 1 (count-group-unanimous-yes "b")))
+    (is (= 6 (count-all-unanimous-groups "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb")))))

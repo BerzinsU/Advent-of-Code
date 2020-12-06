@@ -209,3 +209,46 @@
                   index))
               (dec (first ids))
               ids))))
+
+
+;; Day 6
+
+(defn read-input_groups [path]
+  (-> (slurp path)
+      (str/split #"\n\n")))
+
+
+(defn count-group-yes [group-answer]
+  (->> (str/split group-answer #"\n")
+       (map #(str/split % #""))
+       (apply concat)
+       set
+       count))
+
+
+(defn count-all-groups [answers]
+  (reduce + (map count-group-yes answers)))
+
+
+(defn day_6_1 []
+  (time
+    (let [inputs (read-input_groups "inputs/input_day_6_1.txt")]
+      (count-all-groups inputs))))
+
+
+(defn count-group-unanimous-yes [group-answer]
+  (->> (str/split group-answer #"\n")
+       (map #(str/split % #""))
+       (map  set)
+       (apply cs/intersection)
+       count))
+
+
+(defn count-all-unanimous-groups [answers]
+  (reduce + (map count-group-unanimous-yes answers)))
+
+
+(defn day_6_2 []
+  (time
+    (let [inputs (read-input_groups "inputs/input_day_6_1.txt")]
+      (count-all-unanimous-groups inputs))))
