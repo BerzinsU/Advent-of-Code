@@ -239,7 +239,7 @@
 (defn count-group-unanimous-yes [group-answer]
   (->> (str/split group-answer #"\n")
        (map #(str/split % #""))
-       (map  set)
+       (map set)
        (apply cs/intersection)
        count))
 
@@ -252,3 +252,75 @@
   (time
     (let [inputs (read-input_groups "inputs/input_day_6_1.txt")]
       (count-all-unanimous-groups inputs))))
+
+
+;;Day 7
+
+(defn unpack_matroska [bags_inside]
+  (->> (str/split bags_inside #" bag*\w+\, | bag*\w+\.")
+       (mapv (fn [bag]
+               (-> (str/replace bag #"\d+ " "")
+                   (str/replace " " "_")
+                   keyword)))))
+
+(defn unpack [input child-unpack]
+  (->> input
+       (map #(str/split % #" bags contain "))
+       (map (fn [[parent children]]
+              {(keyword (str/replace parent " " "_")) (child-unpack children)}))))
+
+(defn bags-containing [bags color]
+  (let [parents (->> (filter #(contains? (-> % vals first set) color) bags)
+                     (map #(keys %))
+                     (apply concat)
+                     set)]
+    parents))
+
+(defn bags-containing-multiple [bags colors]
+  (->> colors
+       (map #(bags-containing bags %))
+       (apply concat)
+       set))
+
+(defn find-wrappings-bags [all-bags bag-ids]
+  (loop [bag bag-ids
+         found-colors bag-ids]
+    (let [parents (bags-containing-multiple all-bags bag)]
+      (if (< 0 (count parents))
+        (recur parents (cs/union found-colors parents))
+        (cs/union found-colors parents)))))
+
+(defn count-wrapping-bags [all-bags]
+  (dec (count (find-wrappings-bags all-bags #{:shiny_gold}))))
+
+(defn day_7_1 []
+  (time
+    (let [all-bags (unpack (read-input_lines "inputs/input_day_7_1.txt") unpack_matroska)]
+      (count-wrapping-bags all-bags))))
+
+(defn unpack_matroska_with_counts [bags_inside]
+  (->> (str/split bags_inside #" bag*\w+\, | bag*\w+\.")
+       (mapv (fn [bag]
+               (let [split (str/split bag #"(?<=\d) ")]
+                 (if (= "no other" bag)
+                   [:no_other 0]
+                   [(keyword (str/replace (second split) " " "_")) (Integer/parseInt (first split))]))))))
+
+
+(defn packer [all-bags start-bag counts]
+  (let [bags (start-bag all-bags)
+        values (map (fn [[bag-id bag-count]]
+                      (let [return (* counts
+                                      (if (= bag-count 0)
+                                        0
+                                        (packer all-bags bag-id bag-count)))]
+                        return))
+                    bags)]
+    (+ (reduce + values) counts)))
+
+
+(defn day_7_2 []
+  (time
+    (let [inputs (read-input_lines "inputs/input_day_7_1.txt")
+          all-bags-counted (apply merge (unpack inputs unpack_matroska_with_counts))]
+      (dec (packer all-bags-counted :shiny_gold 1)))))

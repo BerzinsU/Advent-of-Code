@@ -25,7 +25,7 @@
     (is (= 3 (count-group-yes "ab\nac")))
     (is (= 1 (count-group-yes "a\na\na\na")))
     (is (= 1 (count-group-yes "b")))
-    (is (= 11 (count-all-groups "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb")))))
+    (is (= 11 (count-all-groups (clojure.string/split "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb" #"\n\n"))))))
 
 (deftest count_unanimous_yeses
   (testing "Counting unanimous yeses"
@@ -34,4 +34,26 @@
     (is (= 1 (count-group-unanimous-yes "ab\nac")))
     (is (= 1 (count-group-unanimous-yes "a\na\na\na")))
     (is (= 1 (count-group-unanimous-yes "b")))
-    (is (= 6 (count-all-unanimous-groups "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb")))))
+    (is (= 6 (count-all-unanimous-groups (clojure.string/split  "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb" #"\n\n"))))))
+
+(def bag_input (-> "light red bags contain 1 bright white bag, 2 muted yellow bags.\ndark orange bags contain 3 bright white bags, 4 muted yellow bags.\nbright white bags contain 1 shiny gold bag.\nmuted yellow bags contain 2 shiny gold bags, 9 faded blue bags.\nshiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.\ndark olive bags contain 3 faded blue bags, 4 dotted black bags.\nvibrant plum bags contain 5 faded blue bags, 6 dotted black bags.\nfaded blue bags contain no other bags.\ndotted black bags contain no other bags."
+                   (clojure.string/split #"\n")
+                   (unpack unpack_matroska)))
+
+(def packer_input_1 (-> "shiny gold bags contain 2 dark red bags.\ndark red bags contain 2 dark orange bags.\ndark orange bags contain 2 dark yellow bags.\ndark yellow bags contain 2 dark green bags.\ndark green bags contain 2 dark blue bags.\ndark blue bags contain 2 dark violet bags.\ndark violet bags contain no other bags."
+                        (clojure.string/split #"\n")
+                        (unpack unpack_matroska_with_counts)
+                        (->>
+                          (apply merge))))
+
+(def packer_input_2 (-> "shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.\ndark olive bags contain 3 faded blue bags, 4 dotted black bags.\nvibrant plum bags contain 5 faded blue bags, 6 dotted black bags.\nfaded blue bags contain no other bags.\ndotted black bags contain no other bags."
+                        (clojure.string/split #"\n")
+                        (unpack unpack_matroska_with_counts)
+                        (->>
+                          (apply merge))))
+
+(deftest count_wrapper_bags
+  (testing "Counting Bags that can wrap"
+    (is (= 4 (count-wrapping-bags bag_input)))
+    (is (= 126 (dec (packer packer_input_1 :shiny_gold 1))))
+    (is (= 32 (dec (packer packer_input_2 :shiny_gold 1))))))
