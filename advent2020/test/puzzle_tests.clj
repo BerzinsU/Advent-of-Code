@@ -57,3 +57,9 @@
     (is (= 4 (count-wrapping-bags bag_input)))
     (is (= 126 (dec (packer packer_input_1 :shiny_gold 1))))
     (is (= 32 (dec (packer packer_input_2 :shiny_gold 1))))))
+
+
+(deftest walk_the_stack
+  (testing "Walking stack of instructions"
+    (is (= [5 false] (walk-the-stack [["nop" "+0"] ["acc" "+1"] ["jmp" "+4"] ["acc" "+3"] ["jmp" "-3"] ["acc" "-99"] ["acc" "+1"] ["jmp" "-4"] ["acc" "+6"]])))
+    (is (= [8 true] (fix-the-stack [["nop" "+0"] ["acc" "+1"] ["jmp" "+4"] ["acc" "+3"] ["jmp" "-3"] ["acc" "-99"] ["acc" "+1"] ["jmp" "-4"] ["acc" "+6"]])))))

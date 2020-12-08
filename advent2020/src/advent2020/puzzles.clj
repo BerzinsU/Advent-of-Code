@@ -324,3 +324,59 @@
     (let [inputs (read-input_lines "inputs/input_day_7_1.txt")
           all-bags-counted (apply merge (unpack inputs unpack_matroska_with_counts))]
       (dec (packer all-bags-counted :shiny_gold 1)))))
+
+
+;; Day 8
+
+(defn split-operations [lines]
+  (mapv (fn [line]
+          (str/split line #" ")) lines))
+
+
+(defn walk-the-stack [lines]
+  (loop [stack lines
+         index 0
+         accum 0]
+    (if (= (count stack) index)
+      [accum true]
+      (let [[opp amount] (stack index)]
+        (if (= opp "visited")
+          [accum (every? #(= "visited" %) stack)]
+          (condp = opp
+            "acc" (recur (assoc stack index ["visited"])
+                         (inc index)
+                         (+ accum (Integer/parseInt amount)))
+            "jmp" (recur (assoc stack index ["visited"])
+                         (+ index (Integer/parseInt amount))
+                         accum)
+            "nop" (recur (assoc stack index ["visited"])
+                         (inc index)
+                         accum)))))))
+
+
+(defn day_8_1 []
+  (time
+    (let [input (-> (read-input_lines "inputs/input_day_8_1.txt")
+                    split-operations)]
+      (walk-the-stack input))))
+
+
+(defn fix-the-stack [stack]
+  (reduce (fn [idx [opp amount]]
+            (let [new-opp (condp = opp
+                            "nop" "jmp"
+                            "jmp" "nop"
+                            opp)
+                  trial (walk-the-stack (assoc stack idx [new-opp amount]))]
+              (if (second trial)
+                (reduced trial)
+                (inc idx))))
+          0
+          stack))
+
+
+(defn day_8_2 []
+  (time
+    (let [input (-> (read-input_lines "inputs/input_day_8_1.txt")
+                    split-operations)]
+      (fix-the-stack input))))
