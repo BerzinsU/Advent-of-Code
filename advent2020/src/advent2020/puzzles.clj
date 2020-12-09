@@ -388,24 +388,19 @@
   (mapv #(edn/read-string %) input))
 
 
-(defn vec-remove
-  [pos coll]
-  (vec (concat (subvec coll 0 pos) (subvec coll (inc pos)))))
-
-
 (defn can-sum? [sum list]
-  (some true? (map-indexed (fn [idx number]
-                             (some true? (map #(= sum (+ number %))
-                                              (vec-remove idx list))))
-                           list)))
+  (some (fn [number]
+          (some #(= sum (+ number %))
+                list))
+        list))
 
 
 (defn read-XMAS-weakness [p-length XMAS]
-  (reduce (fn [[from to] number]
-            (if (can-sum? number (subvec XMAS from to))
-              [(inc from) (inc to)]
+  (reduce (fn [from number]
+            (if (can-sum? number (subvec XMAS from (+ from p-length)))
+              (inc from)
               (reduced number)))
-          [0 p-length]
+          0
           (subvec XMAS p-length)))
 
 
@@ -435,7 +430,7 @@
 
 (defn exploit-XMAS-weakness [entry XMAS]
   (let [summers (search-summers entry XMAS)]
-    (+ (apply min summers) (apply max summers))))
+    (apply + (apply (juxt min max) summers))))
 
 
 (defn day_9_2 []
