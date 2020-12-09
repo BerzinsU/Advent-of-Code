@@ -380,3 +380,67 @@
     (let [input (-> (read-input_lines "inputs/input_day_8_1.txt")
                     split-operations)]
       (fix-the-stack input))))
+
+
+; Day 9
+
+(defn read-numbers [input]
+  (mapv #(edn/read-string %) input))
+
+
+(defn vec-remove
+  [pos coll]
+  (vec (concat (subvec coll 0 pos) (subvec coll (inc pos)))))
+
+
+(defn can-sum? [sum list]
+  (some true? (map-indexed (fn [idx number]
+                             (some true? (map #(= sum (+ number %))
+                                              (vec-remove idx list))))
+                           list)))
+
+
+(defn read-XMAS-weakness [p-length XMAS]
+  (reduce (fn [[from to] number]
+            (if (can-sum? number (subvec XMAS from to))
+              [(inc from) (inc to)]
+              (reduced number)))
+          [0 p-length]
+          (subvec XMAS p-length)))
+
+
+(defn day_9_1 []
+  (time
+    (let [input (-> (read-input_lines "inputs/input_day_9_1.txt")
+                    read-numbers)]
+      (read-XMAS-weakness 25 input))))
+
+
+(defn search-summers [sum list]
+  (->> (map-indexed (fn [idx number]
+                      (reduce (fn [[acc numbers] number]
+                                (let [new-sum (+ acc number)
+                                      new-numbers (conj numbers number)]
+                                  (cond
+                                    (or (= number sum)
+                                        (< sum new-sum)) (reduced nil)
+                                    (= sum new-sum) (reduced new-numbers)
+                                    :else [new-sum new-numbers])))
+                              [0 []]
+                              (subvec list idx)))
+                    list)
+       (remove nil?)
+       (apply into [])))
+
+
+(defn exploit-XMAS-weakness [entry XMAS]
+  (let [summers (search-summers entry XMAS)]
+    (+ (apply min summers) (apply max summers))))
+
+
+(defn day_9_2 []
+  (time
+    (let [input (-> (read-input_lines "inputs/input_day_9_1.txt")
+                    read-numbers)
+          weak-point (read-XMAS-weakness 25 input)]
+      (exploit-XMAS-weakness weak-point input))))

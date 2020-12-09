@@ -34,7 +34,7 @@
     (is (= 1 (count-group-unanimous-yes "ab\nac")))
     (is (= 1 (count-group-unanimous-yes "a\na\na\na")))
     (is (= 1 (count-group-unanimous-yes "b")))
-    (is (= 6 (count-all-unanimous-groups (clojure.string/split  "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb" #"\n\n"))))))
+    (is (= 6 (count-all-unanimous-groups (clojure.string/split "abc\n\na\nb\nc\n\nab\nac\n\na\na\na\na\n\nb" #"\n\n"))))))
 
 (def bag_input (-> "light red bags contain 1 bright white bag, 2 muted yellow bags.\ndark orange bags contain 3 bright white bags, 4 muted yellow bags.\nbright white bags contain 1 shiny gold bag.\nmuted yellow bags contain 2 shiny gold bags, 9 faded blue bags.\nshiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.\ndark olive bags contain 3 faded blue bags, 4 dotted black bags.\nvibrant plum bags contain 5 faded blue bags, 6 dotted black bags.\nfaded blue bags contain no other bags.\ndotted black bags contain no other bags."
                    (clojure.string/split #"\n")
@@ -63,3 +63,8 @@
   (testing "Walking stack of instructions"
     (is (= [5 false] (walk-the-stack [["nop" "+0"] ["acc" "+1"] ["jmp" "+4"] ["acc" "+3"] ["jmp" "-3"] ["acc" "-99"] ["acc" "+1"] ["jmp" "-4"] ["acc" "+6"]])))
     (is (= [8 true] (fix-the-stack [["nop" "+0"] ["acc" "+1"] ["jmp" "+4"] ["acc" "+3"] ["jmp" "-3"] ["acc" "-99"] ["acc" "+1"] ["jmp" "-4"] ["acc" "+6"]])))))
+
+(deftest find_wrong_sum
+  (testing "Find the number that doesnt sum from previous"
+    (is (= 127 (read-XMAS-weakness 5 [35 20 15 25 47 40 62 55 65 95 102 117 150 182 127 219 299 277 309 576])))
+    (is (= 62 (exploit-XMAS-weakness 127 [35 20 15 25 47 40 62 55 65 95 102 117 150 182 127 219 299 277 309 576])))))
