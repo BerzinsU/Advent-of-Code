@@ -27,29 +27,31 @@ int part_1(ifstream &inputFile)
         size_t delimiterPosE = line.find("|");
 
         winning = line.substr(delimiterPosS+1, delimiterPosE -delimiterPosS-1);   
-        winning = regex_replace(winning, regex("^ +| +$|( ) +"), "$1");
 
         istringstream number_stream(winning);
         string number;
 
         while(getline(number_stream, number, ' ')) {
-            winningNumbers.push_back(stoi(number));
+            if(number.size()>0){
+                winningNumbers.push_back(stoi(number));
+            }
         }
         
 
         scratched = line.substr( delimiterPosE+1);   
-        scratched = regex_replace(scratched, regex("^ +| +$|( ) +"), "$1");
 
         number_stream = istringstream(scratched);
 
         while(getline(number_stream, number, ' ')){
-            int scratchedNumber = stoi(number);
-            for(int winNumber: winningNumbers){
-                if(winNumber == scratchedNumber){
-                    if(cardResult == 0){
-                        cardResult = 1;
-                    } else {
-                        cardResult = cardResult*2;
+            if(number.size()>0){
+                int scratchedNumber = stoi(number);
+                for(int winNumber: winningNumbers){
+                    if(winNumber == scratchedNumber){
+                        if(cardResult == 0){
+                            cardResult = 1;
+                        } else {
+                            cardResult = cardResult*2;
+                        }
                     }
                 }
             }
@@ -81,27 +83,30 @@ int part_2(ifstream &inputFile)
         istringstream gameNameStream(line.substr(0,delimiterPosS));
         gameNameStream >> cardName;
         gameNameStream >> cardNumber;
-      
+
+
         winning = line.substr(delimiterPosS+1, delimiterPosE -delimiterPosS-1);   
-        winning = regex_replace(winning, regex("^ +| +$|( ) +"), "$1");
 
         istringstream number_stream(winning);
         string number;
 
         while(getline(number_stream, number, ' ')){
-            winningNumbers.insert(stoi(number));
+            if(number.size()>0){
+                winningNumbers.insert(stoi(number));
+            }
         }
 
         scratched = line.substr( delimiterPosE+1);   
-        scratched = regex_replace(scratched, regex("^ +| +$|( ) +"), "$1");
 
         number_stream = istringstream(scratched);
 
         while(getline(number_stream, number, ' ')){
-            int scratchedNumber = stoi(number);
-            auto it = winningNumbers.find(scratchedNumber);
-            if(it != winningNumbers.end()){
-                winningNumberCount++;
+             if(number.size()>0){
+                int scratchedNumber = stoi(number);
+                auto it = winningNumbers.find(scratchedNumber);
+                if(it != winningNumbers.end()){
+                    winningNumberCount++;
+                }
             }
         }
             
@@ -139,5 +144,10 @@ int main()
     
     std::cout << "Time taken: " << duration.count()/1e+6 << " seconds" << std::endl;
     inputFile.close();
+
+    // std::string dummy;
+    // std::cout << "Enter to continue..." << std::endl;
+    // std::getline(std::cin, dummy);
+
     return 0;
 }
