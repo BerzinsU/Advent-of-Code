@@ -13,10 +13,8 @@
 
 using namespace std;
 
-int part_1() 
+int part_1(ifstream &inputFile) 
 {
-    ifstream inputFile("input.txt");
-
     string line;
     int result = 0;
 
@@ -34,7 +32,7 @@ int part_1()
         istringstream number_stream(winning);
         string number;
 
-        while(getline(number_stream, number, ' ')){
+        while(getline(number_stream, number, ' ')) {
             winningNumbers.push_back(stoi(number));
         }
         
@@ -58,15 +56,11 @@ int part_1()
         }
         result += cardResult;
     }
-
-    inputFile.close();
     return result;
 }
 
-int part_2() 
+int part_2(ifstream &inputFile) 
 {
-    ifstream inputFile("input.txt");
-
     string line;
     int result = 0;
     int uniqueGames = 0;
@@ -76,19 +70,18 @@ int part_2()
         uniqueGames++;
 
         string winning, scratched;
-        vector<int> winningNumbers, scratchedNumbers;
+        set<int> winningNumbers;
         int winningNumberCount = 0;
+        string cardName;
         int cardNumber = 0;
 
         size_t delimiterPosS = line.find(":");
         size_t delimiterPosE = line.find("|");
 
-        string gameName = line.substr(0,delimiterPosS);
-        smatch match;
-        if(regex_search(gameName, match, regex("\\b\\d+\\b"))) {
-            cardNumber = stoi(match.str());
-        }
-
+        istringstream gameNameStream(line.substr(0,delimiterPosS));
+        gameNameStream >> cardName;
+        gameNameStream >> cardNumber;
+      
         winning = line.substr(delimiterPosS+1, delimiterPosE -delimiterPosS-1);   
         winning = regex_replace(winning, regex("^ +| +$|( ) +"), "$1");
 
@@ -96,36 +89,30 @@ int part_2()
         string number;
 
         while(getline(number_stream, number, ' ')){
-            winningNumbers.push_back(stoi(number));
+            winningNumbers.insert(stoi(number));
         }
-        
 
         scratched = line.substr( delimiterPosE+1);   
         scratched = regex_replace(scratched, regex("^ +| +$|( ) +"), "$1");
 
         number_stream = istringstream(scratched);
 
-        for(int i = 1; i <= copies[cardNumber]; ++i){
-            while(getline(number_stream, number, ' ')){
-                int scratchedNumber = stoi(number);
-                for(int winNumber: winningNumbers){
-                    if(winNumber == scratchedNumber){
-                        winningNumberCount++;
-                    }
-                }
+        while(getline(number_stream, number, ' ')){
+            int scratchedNumber = stoi(number);
+            auto it = winningNumbers.find(scratchedNumber);
+            if(it != winningNumbers.end()){
+                winningNumberCount++;
             }
-
-            for(int j = 1; j <= winningNumberCount; ++j){
-                copies[cardNumber+j] = copies[cardNumber+j]+1;
-            }
+        }
+            
+        for(int j = 1; j <= winningNumberCount; ++j){
+            copies[cardNumber+j] += copies[cardNumber];
         }
     }
 
     for(int i = 1; i <= uniqueGames; ++i){
         result += copies[i];
     }
-
-    inputFile.close();
     return result;
 }
 
@@ -133,21 +120,24 @@ int part_2()
 
 int main()
 {   
+    ifstream inputFile("input.txt");
     auto start = std::chrono::high_resolution_clock::now();
     
     int result = 0;
+    
+    result = part_1(inputFile);
+    cout << "Part 1: " << result << endl;
 
-    // result = part_1();
-    // cout << "Part 1: " << result << endl;
+    inputFile.clear();
+    inputFile.seekg(0);
 
-    result = part_2();
+    result = part_2(inputFile);
     cout << "Part 2: " << result << endl;
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     
     std::cout << "Time taken: " << duration.count()/1e+6 << " seconds" << std::endl;
-
-
+    inputFile.close();
     return 0;
 }
