@@ -17,15 +17,19 @@ int part_1(ifstream &inputFile)
 {
     string line;
     int result = 0;
+    size_t delimiterPosS = 0;
+    size_t delimiterPosE = 0;
 
     while ( getline(inputFile, line) ) {
         string winning, scratched;
         vector<int> winningNumbers, scratchedNumbers;
         int cardResult = 0;
-
-        size_t delimiterPosS = line.find(":");
-        size_t delimiterPosE = line.find("|");
-
+        if(delimiterPosS == 0){
+            delimiterPosS = line.find(":");
+        }
+        if(delimiterPosE == 0){
+            delimiterPosE = line.find("|");
+        }
         winning = line.substr(delimiterPosS+1, delimiterPosE -delimiterPosS-1);   
 
         istringstream number_stream(winning);
@@ -68,22 +72,22 @@ int part_2(ifstream &inputFile)
     int uniqueGames = 0;
 
     vector<int> copies(200,1);
+    size_t delimiterPosS = 0;
+    size_t delimiterPosE = 0;
     while ( getline(inputFile, line) ) {
-        uniqueGames++;
+       
 
         string winning, scratched;
         set<int> winningNumbers;
         int winningNumberCount = 0;
         string cardName;
-        int cardNumber = 0;
 
-        size_t delimiterPosS = line.find(":");
-        size_t delimiterPosE = line.find("|");
-
-        istringstream gameNameStream(line.substr(0,delimiterPosS));
-        gameNameStream >> cardName;
-        gameNameStream >> cardNumber;
-
+        if(delimiterPosS == 0){
+            delimiterPosS = line.find(":");
+        }
+        if(delimiterPosE == 0){
+            delimiterPosE = line.find("|");
+        }
 
         winning = line.substr(delimiterPosS+1, delimiterPosE -delimiterPosS-1);   
 
@@ -111,8 +115,9 @@ int part_2(ifstream &inputFile)
         }
             
         for(int j = 1; j <= winningNumberCount; ++j){
-            copies[cardNumber+j] += copies[cardNumber];
+            copies[uniqueGames+j] += copies[uniqueGames];
         }
+        ++uniqueGames;
     }
 
     for(int i = 1; i <= uniqueGames; ++i){
