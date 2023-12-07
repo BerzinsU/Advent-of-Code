@@ -17,12 +17,20 @@ using namespace std;
 
 vector<char> cardStrengths = {'A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'};
 
+map<string,int>cardMemo = {};
+
 int getHandStrength(string hand)
-{   map<char, int> charCount;
+{   
+    int precalc = cardMemo[hand];
+    if(precalc){
+        return precalc;
+    }
+    map<char, int> charCount;
     for(char ch : hand){
         charCount[ch]++;
     }
-    
+
+    int strenght = 1;
     vector<int> counts;
     for (const auto& pair : charCount) {
         counts.push_back(pair.second);
@@ -30,32 +38,35 @@ int getHandStrength(string hand)
 
     if(find(counts.begin(), counts.end(), 5)!= counts.end()){
         //five kind
-        return 7;
+        strenght = 7;
     }
     else if(find(counts.begin(), counts.end(), 4)!= counts.end()){
         // four kind
-        return 6;
+        strenght = 6;
     }
     else if(find(counts.begin(), counts.end(), 3)!= counts.end() && 
     (find(counts.begin(), counts.end(), 2)!= counts.end())){
         // full house
-        return 5;
+        strenght = 5;
     }
     else if(find(counts.begin(), counts.end(), 3)!= counts.end() && 
     (find(counts.begin(), counts.end(), 2)== counts.end())){
         // three kind
-        return 4;
+        strenght = 4;
     }
     else if(count(counts.begin(), counts.end(), 2) > 1){
         // two  pair
-        return 3;
+        strenght = 3;
     }
     else if(count(counts.begin(), counts.end(), 2) == 1){
         // pair
-        return 2;
+        strenght = 2;
     }
     // high card
-    return 1;
+
+    cardMemo[hand] = strenght;
+
+    return strenght;
 }
 
 
@@ -88,7 +99,7 @@ int part_1(ifstream &inputFile)
                 }
             }
         }
-        return getHandStrength(a.first) < getHandStrength(b.first);
+        return strenghtA < strenghtB;
     });
 
     for (int i = 0; i < hands.size();++i){
@@ -100,8 +111,15 @@ int part_1(ifstream &inputFile)
 
 vector<char> cardStrengthsWithJoker = {'A', 'K', 'Q', 'T', '9', '8', '7', '6', '5', '4', '3', '2', 'J'};
 
+map<string,int>cardMemoJoker = {};
+
 int getHandStrengthWithJoker(string hand)
-{   map<char, int> charCount;
+{  
+    int precalc = cardMemo[hand];
+    if(precalc){
+        return precalc;
+    }
+     map<char, int> charCount;
     int jokers = 0;
     for(char ch : hand){
         charCount[ch]++;
@@ -205,6 +223,7 @@ int getHandStrengthWithJoker(string hand)
     if(jokers > 1  && strength==5 ){
         cout << hand << ": " << strength << endl;
     }
+    cardMemo[hand] = strength;
     return strength;
 }
 
@@ -237,7 +256,7 @@ int part_2(ifstream &inputFile)
                 }
             }
         }
-        return getHandStrengthWithJoker(a.first) < getHandStrengthWithJoker(b.first);
+        return strenghtA < strenghtB;
     });
 
     for (int i = 0; i < hands.size();++i){
